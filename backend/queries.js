@@ -19,9 +19,9 @@ const getUsers = (request, response) => {
 
 //get user by username & password
 const getUser = (request, response) => {
-  const { username, password } = request.body;
+  const username = request.params.username;
 
-  pool.query('SELECT * FROM highscores WHERE username = $1 AND password = $2', [username, password], (error, results) => {
+  pool.query('SELECT * FROM highscores WHERE username = $1', [username], (error, results) => {
     if(error) {
       throw error;
     }
@@ -31,9 +31,9 @@ const getUser = (request, response) => {
 
 //add new user
 const addUser = (request, response) => {
-  const { username, password } = request.body;
+  const { username, highscore } = request.body;
 
-  pool.query('INSERT INTO invitees (username, password) VALUES ($1, $2)', [username, password], (error, results) => {
+  pool.query('INSERT INTO highscores (username, highscore) VALUES ($1, $2)', [username, highscore], (error, results) => {
     if(error) {
       throw error;
     }
@@ -43,12 +43,12 @@ const addUser = (request, response) => {
 
 //edit high score
 const editScore = (request, response) => {
-  const newScore = request.params.score;
-  const { username, password } = request.body;
+  const username = request.params.username;
+  const newScore = request.body.newScore;
 
   pool.query(
-    'UPDATE highscores SET highscore = $1 WHERE username = $2 AND password = $3',
-    [username, [password], newScore],
+    'UPDATE highscores SET highscore = $1 WHERE username = $2',
+    [newScore, username],
     (error, results) => {
       if(error) {
         throw error;
@@ -59,20 +59,26 @@ const editScore = (request, response) => {
 }
 
 //remove user
-const removeInvitee = (request, response) => {
-  const { username, password } = request.body;
-  
+const removeUser = (request, response) => {
+  const username = request.params.username;
+
   pool.query(
-    'DELETE FROM highscore WHERE username = $1 AND password = $2', [username, password], (error, results) => {
+    'DELETE FROM highscores WHERE username = $1', [username], (error, results) => {
     if(error) {
       throw error;
     }
-    response.status(200).send(`Invitee removed with name ${name}`);
+    response.status(200).send(`User removed with username: ${username}`);
     }
   );
 }
 
-
+module.exports = {
+  getUsers,
+  getUser,
+  addUser,
+  editScore,
+  removeUser,
+};
 
 
 
