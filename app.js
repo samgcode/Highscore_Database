@@ -7,22 +7,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const text = nameInput.value;
+    const userNameText = 'Username: ' + nameInput.value;
     nameInput.value = '';
-    addUser(text);
+    const highscoreText = 'Highscore: ' + scoreInput.value;
+    scoreInput.value = '';
+    addUser(userNameText, highscoreText);
 
   });
-  function addUser(userName) {
+
+  function addUser(userName, highscore) {
     //do database stuff
-    const li = createLi(userName);
-    ul.appendChild(li);
+    const usernameLi = createLi(userName);
+    ul.appendChild(usernameLi);
+
+    const highscoreLi = createLi(highscore);
+    ul.appendChild(highscoreLi);
   }
 
-  function createLi(userName) {
+  function createLi(text) {
     console.log('test');
     const li = document.createElement('li');
 
-    appendToLi('span', 'textContent', userName);
+    appendToLi('span', 'textContent', text);
     //add whatever other stuff to the li
 
     function appendToLi(elementName, property, value) {
