@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const userNameText = 'Username: ' + nameInput.value;
+    const userNameText = nameInput.value;
     nameInput.value = '';
-    const highscoreText = 'Highscore: ' + scoreInput.value;
+    const highscoreText = scoreInput.value;
     scoreInput.value = '';
     addUser(userNameText, highscoreText);
 
@@ -17,18 +17,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function addUser(userName, highscore) {
     //do database stuff
-    const usernameLi = createLi(userName);
+    const usernameLi = createLi(userName, highscore);
     ul.appendChild(usernameLi);
-
-    const highscoreLi = createLi(highscore);
-    ul.appendChild(highscoreLi);
   }
 
-  function createLi(text) {
+  function createLi(userName, highscore) {
     console.log('test');
     const li = document.createElement('li');
 
-    appendToLi('span', 'textContent', text);
+    appendToLi('span', 'textContent', 'Username: ');
+    appendToLi('span', 'textContent', userName);
+    appendToLi('span', 'textContent', ' ');
+    appendToLi('button', 'textContent', 'Edit name');
+    appendToLi('span', 'textContent', ' Highscore: ');
+    appendToLi('span', 'textContent', highscore);
+    appendToLi('span', 'textContent', ' ');
+    appendToLi('button', 'textContent', 'Edit score');
+    appendToLi('button', 'textContent', 'remove');
     //add whatever other stuff to the li
 
     function appendToLi(elementName, property, value) {
