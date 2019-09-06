@@ -12,7 +12,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const highscoreText = scoreInput.value;
     scoreInput.value = '';
     addUser(userNameText, highscoreText);
+  });
 
+  let username = '';
+
+  ul.addEventListener('click', (e) => {
+    if(e.target.tagName === 'BUTTON') {
+      const button = e.target;
+      const li = button.parentNode;
+      const action = button.textContent.replace(/\s/g, '');
+      console.log(action);
+      const actions = {
+        remove: () => {
+          ul.removeChild(li);
+        },
+        Editname: () => {
+          const span = li.childNodes[1];
+          const input = document.createElement('input');
+          input.type = 'text';
+          username = span.textContent;
+          input.value = span.textContent;
+          li.insertBefore(input, span);
+          li.removeChild(span);
+          button.textContent = 'Save name';
+        },
+        Savename: () => {
+          const span = document.createElement('span');
+          const input = li.childNodes[1];
+          span.textContent = input.value;
+          li.insertBefore(span, input);
+          li.removeChild(input);
+          button.textContent = 'Edit name';
+        },
+        Editscore: () => {
+          const span = li.childNodes[5];
+          const input = document.createElement('input');
+          input.type = 'text';
+          username = span.textContent;
+          input.value = span.textContent;
+          li.insertBefore(input, span);
+          li.removeChild(span);
+          button.textContent = 'Save score';
+        },
+        Savescore: () => {
+          const span = document.createElement('span');
+          const input = li.childNodes[5];
+          span.textContent = input.value;
+          li.insertBefore(span, input);
+          li.removeChild(input);
+          button.textContent = 'Edit score';
+        }
+      };
+      actions[action]();
+    }
   });
 
   function addUser(userName, highscore) {
@@ -22,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function createLi(userName, highscore) {
-    console.log('test');
     const li = document.createElement('li');
 
     appendToLi('span', 'textContent', 'Username: ');
