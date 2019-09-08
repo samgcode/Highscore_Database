@@ -67,11 +67,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function addUser(userName, highscore) {
-    //do database stuff
-    const usernameLi = createLi(userName, highscore);
-    ul.appendChild(usernameLi);
+  let xhr = new XMLHttpRequest();
+
+  loadUsers();
+
+  function loadUsers() {
+    xhr.open('GET', 'http://localhost:3000/users');
+    xhr.send();
+
+    xhr.onload = () => {
+      if(xhr.status != 200) {
+        alert(`Error ${xhr.status}: ${xhr.statusText}`);
+      } else {
+        var users = JSON.parse(xhr.response);
+        for(var i = 0; i < users.length; i++) {
+          const user = users[i];
+          console.log('username: ', user.username);
+          const li = createLi(user.username, user.highscore);
+
+          ul.appendChild(li);
+        }
+      }
+    };
   }
+
+  function addUser(username, highscore) {
+    xhr.open('POST', `http://localhost:3000/users/`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(`username=${username}&highscore=${highscore}`);
+
+    console.log(username);
+
+    xhr.onload = () => {
+      if(xhr.status != 201) {
+        alert(`Error ${xhr.status}: ${xhr.statusText}`);
+      } else {
+        const li = createLi(username, highscore);
+        ul.appendChild(li);
+      }
+    };
+  }
+
+  // function removeUser(username) {
+  //   xhr.open('DELETE', `http://localhost:3000/users/${username}`);
+  //   xhr.send();
+  //
+  //    xhr.onload = () => {
+  //      if(xhr.status != 200) {
+  //
+  //      }
+  //    }
+  // }
 
   function createLi(userName, highscore) {
     const li = document.createElement('li');
