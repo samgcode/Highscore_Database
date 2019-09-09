@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(action);
       const actions = {
         remove: () => {
-          ul.removeChild(li);
+          removeUser(li);
         },
         Editname: () => {
           const span = li.childNodes[1];
@@ -37,30 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
           button.textContent = 'Save name';
         },
         Savename: () => {
-          const span = document.createElement('span');
-          const input = li.childNodes[1];
-          span.textContent = input.value;
-          li.insertBefore(span, input);
-          li.removeChild(input);
-          button.textContent = 'Edit name';
+          editUsername(username, li);
         },
         Editscore: () => {
           const span = li.childNodes[5];
           const input = document.createElement('input');
           input.type = 'text';
-          username = span.textContent;
+          username = li.childNodes[1].textContent;
           input.value = span.textContent;
           li.insertBefore(input, span);
           li.removeChild(span);
           button.textContent = 'Save score';
         },
         Savescore: () => {
-          const span = document.createElement('span');
-          const input = li.childNodes[5];
-          span.textContent = input.value;
-          li.insertBefore(span, input);
-          li.removeChild(input);
-          button.textContent = 'Edit score';
+          editScore(username, li);
         }
       };
       actions[action]();
@@ -70,6 +60,36 @@ document.addEventListener('DOMContentLoaded', () => {
   let xhr = new XMLHttpRequest();
 
   loadUsers();
+
+  function createLi(userName, highscore) {
+    const li = document.createElement('li');
+
+    appendToLi('span', 'textContent', 'Username: ');
+    appendToLi('span', 'textContent', userName);
+    appendToLi('span', 'textContent', ' ');
+    appendToLi('button', 'textContent', 'Edit name');
+    appendToLi('span', 'textContent', ' Highscore: ');
+    appendToLi('span', 'textContent', highscore);
+    appendToLi('span', 'textContent', ' ');
+    appendToLi('button', 'textContent', 'Edit score');
+    appendToLi('button', 'textContent', 'remove');
+    //add whatever other stuff to the li
+
+    function appendToLi(elementName, property, value) {
+      const element = createElement(elementName, property, value);
+      li.appendChild(element);
+      return element;
+    }
+
+    function createElement(elementName, property, value) {
+      const element = document.createElement(elementName);
+      element[property] = value;
+      return element;
+    }
+
+    return li;
+  }
+
 
   function loadUsers() {
     xhr.open('GET', 'http://localhost:3000/users');
@@ -108,44 +128,104 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // function removeUser(username) {
-  //   xhr.open('DELETE', `http://localhost:3000/users/${username}`);
-  //   xhr.send();
-  //
-  //    xhr.onload = () => {
-  //      if(xhr.status != 200) {
-  //
-  //      }
-  //    }
-  // }
+  function removeUser(li) {
+    username = li.childNodes[1].textContent;
 
-  function createLi(userName, highscore) {
-    const li = document.createElement('li');
+    xhr.open('DELETE', `http://localhost:3000/users/${username}`);
+    xhr.send();
 
-    appendToLi('span', 'textContent', 'Username: ');
-    appendToLi('span', 'textContent', userName);
-    appendToLi('span', 'textContent', ' ');
-    appendToLi('button', 'textContent', 'Edit name');
-    appendToLi('span', 'textContent', ' Highscore: ');
-    appendToLi('span', 'textContent', highscore);
-    appendToLi('span', 'textContent', ' ');
-    appendToLi('button', 'textContent', 'Edit score');
-    appendToLi('button', 'textContent', 'remove');
-    //add whatever other stuff to the li
-
-    function appendToLi(elementName, property, value) {
-      const element = createElement(elementName, property, value);
-      li.appendChild(element);
-      return element;
-    }
-
-    function createElement(elementName, property, value) {
-      const element = document.createElement(elementName);
-      element[property] = value;
-      return element;
-    }
-
-    return li;
+     xhr.onload = () => {
+       if(xhr.status != 200) {
+         alert(`Error ${xhr.status}: ${xhr.statusText}`);
+       } else {
+         ul.removeChild(li);
+       }
+     };
   }
 
+  function editUsername(username, li) {
+    xhr.open('PUT', `http://localhost:3000/users/${username}`);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    const input = li.childNodes[1];
+    const button = li.childNodes[3];
+
+    const newName = input.value;
+    const score = parseInt(li.childNodes[5].textContent);
+
+    xhr.send(`username=${newName}&highscore=${score}`);
+
+    xhr.onload = () => {
+      if (xhr.status != 200) {
+        alert(`Error ${xhr.status}: ${xhr.statusText}`);
+      } else {
+        const span = document.createElement('span');
+        span.textContent = input.value;
+
+        li.insertBefore(span, input);
+        li.removeChild(input);
+
+        button.textContent = 'Edit name';
+      }
+    };
+  }
+
+  function editScore(username, li) {
+
+    console.log('Username: ', username);
+    xhr.open('PUT', `http://localhost:3000/users/${username}`);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    const input = li.childNodes[5];
+    const button = li.childNodes[7];
+
+    const newName = li.childNodes[1].textContent;
+    const newScore = input.value;
+
+    console.log('score: ', newScore);
+
+    xhr.send(`username=${newName}&highscore=${newScore}`)
+
+    xhr.onload = () => {
+      if (xhr.status != 200) {
+        alert(`Error ${xhr.status}: ${xhr.statusText}`);
+      } else {
+        const span = document.createElement('span');
+        span.textContent = input.value;
+
+        li.insertBefore(span, input);
+        li.removeChild(input);
+
+        button.textContent = 'Edit score';
+      }
+    };
+
+  }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//

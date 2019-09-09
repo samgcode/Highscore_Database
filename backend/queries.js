@@ -43,17 +43,17 @@ const addUser = (request, response) => {
 
 //edit high score
 const editScore = (request, response) => {
-  const username = request.params.username;
-  const newScore = request.body.newScore;
+  const oldName = request.params.username;
+  const { username, highscore } = request.body;
 
   pool.query(
-    'UPDATE highscores SET highscore = $1 WHERE username = $2',
-    [newScore, username],
+    'UPDATE highscores SET username = $1, highscore = $2 WHERE username = $3',
+    [username, highscore, oldName],
     (error, results) => {
       if(error) {
         throw error;
       }
-      response.status(200).send(`High score modified of user: ${username}`);
+      response.status(200).send(`User modified with name: ${username}`);
     }
   );
 }
