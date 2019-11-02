@@ -20,7 +20,6 @@ const getUsers = (request, response) => {
 //get user by username & password
 const getUser = (request, response) => {
   const username = request.params.username;
-  //const password  request.params.password;
 
   pool.query('SELECT * FROM highscores WHERE username = $1', [username], (error, results) => {
     if(error) {
@@ -43,13 +42,13 @@ const addUser = (request, response) => {
 }
 
 //edit high score
-const editUser = (request, response) => {
+const editScore = (request, response) => {
   const oldName = request.params.username;
-  const { username, password, highscore } = request.body;
+  const { username, highscore } = request.body;
 
   pool.query(
-    'UPDATE highscores SET username = $1, highscore = $2 WHERE username = $3 AND password = $4',
-    [username, highscore, oldName, password],
+    'UPDATE highscores SET username = $1, highscore = $2 WHERE username = $3',
+    [username, highscore, oldName],
     (error, results) => {
       if(error) {
         throw error;
@@ -77,9 +76,10 @@ module.exports = {
   getUsers,
   getUser,
   addUser,
-  editUser,
+  editScore,
   removeUser,
 };
+
 
 
 
